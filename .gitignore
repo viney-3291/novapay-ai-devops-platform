@@ -1,0 +1,27 @@
+.DS_Store
+
+# Python
+**/venv/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+*.pyc
+*.pyo
+
+# Environment / secrets
+.env
+*.env
+!.env.example
+
+# Logs
+*.log
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# IDE
+.vscode/
+.idea/
