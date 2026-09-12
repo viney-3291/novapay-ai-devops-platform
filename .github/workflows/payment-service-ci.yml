@@ -1,26 +1,18 @@
 name: Payment Service CI
 
 on:
+  push:
+    branches:
+      - "feature/**"
   pull_request:
     branches:
       - main
-    paths:
-      - "apps/payment-service/**"
-      - ".github/workflows/payment-service-ci.yml"
-
-  push:
-    branches:
-      - feature/**
-    paths:
-      - "apps/payment-service/**"
-      - ".github/workflows/payment-service-ci.yml"
 
 permissions:
   contents: read
 
 jobs:
-
-  test:
+  unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
 
@@ -29,10 +21,10 @@ jobs:
         working-directory: apps/payment-service
 
     steps:
-      - name: Checkout repository
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -42,37 +34,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run unit tests
-        run: |
-          python -m pytest -v
-
+      - name: Run tests
+        run: python -m pytest -v
 
   docker-build:
     name: Docker Build
     runs-on: ubuntu-latest
-    needs: test
+    needs: unit-tests
 
     steps:
-      - name: Checkout repository
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Build Payment Service image
+      - name: Build Docker image
         run: |
           docker build \
             -t novapay-payment-service:${{ github.sha }} \
             apps/payment-service
-
-      - name: Save Docker image
-        run: |
-          docker save \
-            novapay-payment-service:${{ github.sha             nov  -o /tmp/      y-            ice.tar
-
-      - name: Upload image f      - namescan
-                                                      
-          name: payment-service-image
-          path: /tmp/novapay-payment-service.tar
-          retention-days: 1
-
 
   security-scan:
     name: Container Security Scan
@@ -80,19 +58,18 @@ jobs:
     needs: docker-build
 
     steps:
-      - name: Download Docker image
-        uses: actions/download-artifact@v4
-        with:
-          name: payment-service-image
-          path: /tmp
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-      - name: Load Docker image
+      - name: Build Docker image
         run: |
-          docker load -i /tmp/novapay-payment-service.tar
+          docker build \
+            -t novapay-payment-service:${{ github.sha }} \
+            apps/payment-service
 
-      - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "novapay-payment-service:${{ github.sha }}"
-                                                            "
-                                   ignore-unfixed: true
+      - name: Scan Docker i      - name: Sc        uses      - name: Scan Dockeion@master
+         ith:
+                              payment                           
+               t: "tab               t: "tab           ,HIGH"
+          ignore-unfixed: true
+          exit-code: "1"
