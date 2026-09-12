@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - "feature/**"
+
   pull_request:
     branches:
       - main
+
   workflow_dispatch:
 
 permissions:
@@ -14,7 +16,7 @@ permissions:
 
 jobs:
   ci:
-    name: Test and Build
+    name: Test Build and Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -38,12 +40,9 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t novapay-payment-service:ci apps/payment-service
-      
-            - name: Scan Docker image with Trivy
-        uses: aquasecurity/trivy-action@0.35.0
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: "novapay-payment-service:ci"
-          format: "table"
-          severity: "HIGH,CRITICAL"
-          ignore-unfixed: true
-          exit-code: "1"
+          image-ref          image-ref          image-ref          imagele          imageerity: "HIGH,CRITICAL"
+          igno          igno             exit-code: "1"
